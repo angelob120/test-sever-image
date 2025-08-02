@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Image Extractor & Preview</title>
+    <title>🖼️ Advanced Website Preview & Image Downloader</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
@@ -44,14 +44,28 @@
 
         .header p {
             color: #666;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .input-section {
-            margin-bottom: 30px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
         .url-input {
@@ -70,8 +84,8 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .extract-btn {
-            padding: 15px 30px;
+        .btn {
+            padding: 15px 25px;
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -80,22 +94,64 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 150px;
+            min-width: 140px;
         }
 
-        .extract-btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
-        .extract-btn:disabled {
+        .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4ade80, #22c55e);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .btn-purple {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+        }
+
+        .quick-tests {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .quick-tests h4 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .test-btn {
+            margin: 3px;
+            padding: 6px 12px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .test-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
         }
 
         .status {
-            margin: 20px 0;
+            margin: 15px 0;
             padding: 15px;
             border-radius: 10px;
             font-weight: 500;
@@ -121,147 +177,112 @@
             border: 1px solid #c8e6c9;
         }
 
-        .cors-notice {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ffeaa7;
+        .method-tabs {
+            margin: 15px 0;
         }
 
-        .cors-notice h3 {
-            margin-bottom: 10px;
-            color: #8b5a00;
-        }
-
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .image-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            margin-right: 5px;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
-        .image-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .image-preview {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-
-        .image-info {
-            padding: 15px;
-        }
-
-        .image-url {
-            font-size: 12px;
-            color: #666;
-            word-break: break-all;
-            background: #f5f5f5;
-            padding: 8px;
-            border-radius: 5px;
-            margin-top: 8px;
-        }
-
-        .image-dimensions {
-            font-size: 14px;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        .download-btn {
-            background: #4caf50;
+        .tab-btn.active {
+            background: #667eea;
             color: white;
+            border-color: #667eea;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .preview-container {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .content-area {
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            background: white;
+            position: relative;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 600px;
             border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 10px;
-            transition: background 0.3s ease;
+            border-radius: 9px;
+            display: none;
         }
 
-        .download-btn:hover {
-            background: #45a049;
+        .preview-frame.active {
+            display: block;
         }
 
-        .stats {
+        .fetched-content {
+            width: 100%;
+            height: 600px;
+            overflow: auto;
+            display: none;
+            border-radius: 9px;
+            position: relative;
+        }
+
+        .fetched-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            width: 100%;
+            height: 600px;
+            border: 3px dashed #e0e0e0;
+            border-radius: 9px;
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 30px;
-            margin: 20px 0;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        }
+
+        .frame-controls {
+            display: none;
+            margin-top: 10px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 10px;
-            min-width: 120px;
+        .frame-controls.active {
+            display: flex;
         }
 
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
+        .height-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .modal-content {
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90%;
-            margin-top: 5%;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
+        .height-slider {
+            width: 150px;
         }
 
         .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            display: inline-block;
+            margin-right: 10px;
         }
 
         @keyframes spin {
@@ -269,22 +290,98 @@
             100% { transform: rotate(360deg); }
         }
 
+        .loading-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 600px;
+            flex-direction: column;
+            color: #666;
+        }
+
+        .fetched-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .content-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            margin: 0;
+            font-weight: bold;
+            border-radius: 9px 9px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .proxy-options {
+            display: none;
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .proxy-options.active {
+            display: block;
+        }
+
+        .proxy-btn {
+            margin: 3px;
+            padding: 8px 15px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .proxy-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .error-details {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .success-details {
+            background: #d1edff;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #0c5460;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .input-section {
                 flex-direction: column;
             }
-
+            
             .url-input {
                 min-width: 100%;
             }
-
+            
             .header h1 {
                 font-size: 2rem;
             }
-
-            .images-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
+            
+            .preview-frame, .fetched-content {
+                height: 400px;
             }
         }
     </style>
@@ -292,305 +389,1055 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🖼️ Web Image Extractor</h1>
-            <p>Extract and preview all images from any webpage</p>
+            <h1>🖼️ Advanced Website Preview</h1>
+            <p>Load any website with multiple bypass methods!</p>
+            <div class="subtitle">Enhanced CORS bypass, iframe alternatives, and proxy support</div>
         </div>
 
-        <div class="cors-notice">
-            <h3>⚠️ CORS Notice</h3>
-            <p><strong>For testing:</strong> Try URLs like "https://picsum.photos" or use a CORS proxy like "https://cors-anywhere.herokuapp.com/" + your URL</p>
-            <p><strong>For production:</strong> This tool works best when deployed on a server with proper CORS handling or proxy setup.</p>
-        </div>
-
-        <div class="input-section">
-            <input 
-                type="url" 
-                class="url-input" 
-                placeholder="Enter website URL (e.g., https://example.com)"
-                id="urlInput"
-            >
-            <button class="extract-btn" onclick="extractImages()">
-                Extract Images
-            </button>
-        </div>
-
-        <div class="status" id="status"></div>
-
-        <div class="stats" id="stats" style="display: none;">
-            <div class="stat-item">
-                <div class="stat-number" id="totalImages">0</div>
-                <div class="stat-label">Total Images</div>
+        <div class="controls">
+            <div class="input-section">
+                <input type="url" class="url-input" id="frameUrl" 
+                       placeholder="Enter URL (https://example.com)">
+                <button class="btn btn-secondary" onclick="loadWithSmartMethod()">🚀 Smart Load</button>
+                <button class="btn" onclick="loadPreview()">📱 Try Iframe</button>
+                <button class="btn btn-purple" onclick="loadWithAdvancedFetch()">🔄 Advanced Fetch</button>
+                <button class="btn" onclick="openInPopup()">🪟 Popup Window</button>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" id="loadedImages">0</div>
-                <div class="stat-label">Loaded</div>
+
+            <div class="quick-tests">
+                <h4>📋 Test These URLs:</h4>
+                <button class="test-btn" onclick="loadQuickUrl('https://httpbin.org/html')">🧪 Test Page</button>
+                <button class="test-btn" onclick="loadQuickUrl('https://picsum.photos')">🖼️ Photo Gallery</button>
+                <button class="test-btn" onclick="loadQuickUrl('https://example.com')">📄 Example.com</button>
+                <button class="test-btn" onclick="loadQuickUrl('https://news.ycombinator.com')">📰 Hacker News</button>
+                <button class="test-btn" onclick="loadQuickUrl('https://reddit.com/r/earthporn.json')">🌍 Reddit API</button>
+                <button class="test-btn" onclick="showBookmarkletMethod()" style="background: #f59e0b; color: white;">📖 Bookmarklet</button>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" id="failedImages">0</div>
-                <div class="stat-label">Failed</div>
+
+            <div class="method-tabs">
+                <button class="tab-btn active" onclick="switchMethod('smart')" id="smartTab">🚀 Smart Load</button>
+                <button class="tab-btn" onclick="switchMethod('iframe')" id="iframeTab">📱 Iframe</button>
+                <button class="tab-btn" onclick="switchMethod('fetch')" id="fetchTab">🔄 Advanced Fetch</button>
+                <button class="tab-btn" onclick="switchMethod('proxy')" id="proxyTab">🌐 Proxy</button>
             </div>
+
+            <div class="proxy-options" id="proxyOptions">
+                <h4>🌐 Proxy Services:</h4>
+                <button class="proxy-btn" onclick="loadWithProxy('allorigins')">AllOrigins</button>
+                <button class="proxy-btn" onclick="loadWithProxy('cors-anywhere')">CORS Anywhere</button>
+                <button class="proxy-btn" onclick="loadWithProxy('thingproxy')">ThingProxy</button>
+                <button class="proxy-btn" onclick="loadWithProxy('jsonp')">JSONP Method</button>
+            </div>
+
+            <div class="status" id="frameStatus"></div>
         </div>
 
-        <div class="images-grid" id="imagesGrid"></div>
-    </div>
-
-    <!-- Modal for full-size image viewing -->
-    <div id="imageModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="modalImage">
+        <div class="preview-container">
+            <div class="frame-controls" id="frameControls">
+                <div class="height-control">
+                    <label>Height:</label>
+                    <input type="range" class="height-slider" min="300" max="1000" value="600" 
+                           oninput="adjustFrameHeight(this.value)">
+                    <span id="heightValue">600px</span>
+                </div>
+                <button class="btn" onclick="refreshContent()">🔄 Refresh</button>
+                <button class="btn" onclick="openInNewTab()">🔗 New Tab</button>
+                <button class="btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+            </div>
+            
+            <div class="content-area">
+                <div class="empty-state" id="emptyState">
+                    <div style="text-align: center; padding: 60px 20px; color: #666;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🌐</div>
+                        <h3 style="margin-bottom: 15px; color: #333;">Advanced Website Preview</h3>
+                        <p style="margin-bottom: 20px;">Enter a URL and choose your loading method</p>
+                        <div style="font-size: 14px; color: #888; max-width: 500px; margin: 0 auto;">
+                            <p style="margin: 8px 0;">🚀 <strong>Smart Load:</strong> Automatically tries the best method</p>
+                            <p style="margin: 8px 0;">📱 <strong>Iframe:</strong> Direct embedding (blocked by some sites)</p>
+                            <p style="margin: 8px 0;">🔄 <strong>Advanced Fetch:</strong> Downloads and processes content</p>
+                            <p style="margin: 8px 0;">🌐 <strong>Proxy:</strong> Uses proxy servers to bypass restrictions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <iframe class="preview-frame" id="previewFrame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"></iframe>
+                
+                <div class="fetched-content" id="fetchedContent"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        let imageStats = {
-            total: 0,
-            loaded: 0,
-            failed: 0
+        let currentUrl = '';
+        let currentMethod = 'smart';
+        const corsProxies = {
+            allorigins: 'https://api.allorigins.win/get?url=',
+            'cors-anywhere': 'https://cors-anywhere.herokuapp.com/',
+            thingproxy: 'https://thingproxy.freeboard.io/fetch/',
+            jsonp: 'https://api.allorigins.win/raw?url='
         };
 
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
-        }
-
-        function hideStatus() {
-            document.getElementById('status').style.display = 'none';
-        }
-
-        function updateStats() {
-            document.getElementById('totalImages').textContent = imageStats.total;
-            document.getElementById('loadedImages').textContent = imageStats.loaded;
-            document.getElementById('failedImages').textContent = imageStats.failed;
-            
-            if (imageStats.total > 0) {
-                document.getElementById('stats').style.display = 'flex';
-            }
-        }
-
-        async function extractImages() {
-            const urlInput = document.getElementById('urlInput');
-            const url = urlInput.value.trim();
-            
+        // Smart loading method - tries multiple approaches automatically
+        async function loadWithSmartMethod() {
+            const url = document.getElementById('frameUrl').value.trim();
             if (!url) {
                 showStatus('Please enter a valid URL', 'error');
                 return;
             }
 
-            try {
-                new URL(url);
-            } catch {
-                showStatus('Please enter a valid URL format', 'error');
+            showStatus('🚀 Smart loading - analyzing URL...', 'loading');
+            
+            // Special handling for Google Maps
+            if (url.includes('maps.google') || url.includes('google.com/maps')) {
+                showStatus('🗺️ Google Maps detected - using specialized method...', 'loading');
+                await loadGoogleMapsSpecial(url);
+                return;
+            }
+            
+            // Other restricted sites
+            if (url.includes('instagram.com') || url.includes('facebook.com') || url.includes('twitter.com')) {
+                showStatus('🔄 Detected restricted site - using advanced fetch...', 'loading');
+                await loadWithAdvancedFetch();
                 return;
             }
 
-            const extractBtn = document.querySelector('.extract-btn');
-            extractBtn.disabled = true;
-            extractBtn.innerHTML = '<div class="loading-spinner"></div>';
+            // Try iframe first for maximum functionality
+            try {
+                await tryIframeLoad(url);
+            } catch (error) {
+                showStatus('📱 Iframe blocked - trying advanced fetch...', 'loading');
+                await loadWithAdvancedFetch();
+            }
+        }
+
+        // Special handling for Google Maps
+        async function loadGoogleMapsSpecial(url) {
+            const fetchedContent = document.getElementById('fetchedContent');
+            const emptyState = document.getElementById('emptyState');
+            const frame = document.getElementById('previewFrame');
+            const controls = document.getElementById('frameControls');
             
-            showStatus('Fetching webpage content...', 'loading');
+            // Setup display
+            emptyState.style.display = 'none';
+            frame.style.display = 'none';
+            fetchedContent.style.display = 'block';
+            fetchedContent.className = 'fetched-content active';
+            controls.className = 'frame-controls active';
+            currentUrl = url;
             
-            // Reset stats
-            imageStats = { total: 0, loaded: 0, failed: 0 };
-            document.getElementById('imagesGrid').innerHTML = '';
-            document.getElementById('stats').style.display = 'none';
+            showStatus('🗺️ Loading Google Maps content...', 'loading');
+            
+            fetchedContent.innerHTML = `
+                <div class="content-header" style="background: linear-gradient(45deg, #1a73e8, #4285f4);">
+                    <div>
+                        <div>🗺️ Google Maps Detected</div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                            Trying specialized loading methods...
+                        </div>
+                    </div>
+                    <div style="font-size: 24px;">🌍</div>
+                </div>
+                <div id="mapsContainer" style="height: calc(100% - 60px); padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="text-align: center;">
+                        <div class="loading-spinner"></div>
+                        <h3>Loading Google Maps...</h3>
+                        <p>Google Maps requires special handling due to security restrictions</p>
+                    </div>
+                </div>
+            `;
 
             try {
-                // Try multiple CORS proxy options
-                const corsProxies = [
-                    '', // Direct fetch first
-                    'https://cors-anywhere.herokuapp.com/',
-                    'https://api.allorigins.win/raw?url=',
-                    'https://cors-proxy.htmldriven.com/?url='
-                ];
-
-                let response;
-                let proxyUsed = 'direct';
-
-                for (let i = 0; i < corsProxies.length; i++) {
-                    try {
-                        const proxyUrl = corsProxies[i] + encodeURIComponent(url);
-                        const testUrl = i === 0 ? url : proxyUrl;
-                        
-                        response = await fetch(testUrl, {
-                            method: 'GET',
-                            headers: {
-                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                            }
-                        });
-
-                        if (response.ok) {
-                            proxyUsed = i === 0 ? 'direct' : corsProxies[i];
-                            break;
-                        }
-                    } catch (err) {
-                        if (i === corsProxies.length - 1) {
-                            throw err;
-                        }
-                    }
+                // Try to extract images from the Maps page
+                const result = await fetchWithProxy(url, 'allorigins');
+                if (result && result.content) {
+                    await processGoogleMapsContent(result.content, url);
+                } else {
+                    throw new Error('Could not fetch Maps content');
                 }
+            } catch (error) {
+                showGoogleMapsAlternatives(url);
+            }
+        }
 
-                if (!response || !response.ok) {
-                    throw new Error(`HTTP ${response?.status}: ${response?.statusText}`);
-                }
-
-                const html = await response.text();
-                showStatus('Parsing HTML and extracting images...', 'loading');
-
-                // Parse HTML and extract images
+        // Process Google Maps content specifically
+        async function processGoogleMapsContent(html, url) {
+            const container = document.getElementById('mapsContainer');
+            
+            try {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 
+                // Extract images from Maps page
                 const images = [];
-                const imageElements = doc.querySelectorAll('img');
-                const baseUrl = new URL(url);
-
-                imageElements.forEach(img => {
-                    let src = img.src || img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-lazy-src');
-                    
-                    if (src) {
-                        // Convert relative URLs to absolute
-                        try {
-                            if (src.startsWith('//')) {
-                                src = baseUrl.protocol + src;
-                            } else if (src.startsWith('/')) {
-                                src = baseUrl.origin + src;
-                            } else if (!src.startsWith('http')) {
-                                src = new URL(src, baseUrl.href).href;
-                            }
-
-                            images.push({
-                                src: src,
-                                alt: img.alt || 'No alt text',
-                                title: img.title || ''
-                            });
-                        } catch (e) {
-                            console.warn('Invalid image URL:', src);
-                        }
+                doc.querySelectorAll('img').forEach(img => {
+                    if (img.src && img.src.startsWith('http') && 
+                        (img.src.includes('googleusercontent') || 
+                         img.src.includes('maps.gstatic') || 
+                         img.src.includes('streetviewpixels'))) {
+                        images.push({
+                            src: img.src,
+                            alt: img.alt || 'Google Maps image'
+                        });
                     }
                 });
 
-                // Remove duplicates
-                const uniqueImages = images.filter((img, index, self) => 
-                    index === self.findIndex(i => i.src === img.src)
-                );
-
-                imageStats.total = uniqueImages.length;
-
-                if (uniqueImages.length === 0) {
-                    showStatus('No images found on this webpage', 'error');
-                    return;
+                if (images.length > 0) {
+                    showStatus(`✅ Found ${images.length} images from Google Maps!`, 'success');
+                    displayMapsImages(images, url);
+                } else {
+                    showGoogleMapsAlternatives(url);
                 }
-
-                showStatus(`Found ${uniqueImages.length} images. Loading previews...`, 'success');
                 
-                // Display images
-                displayImages(uniqueImages);
-                updateStats();
-
             } catch (error) {
-                console.error('Error:', error);
-                showStatus(`Error: ${error.message}. Try using a CORS proxy.`, 'error');
-            } finally {
-                extractBtn.disabled = false;
-                extractBtn.textContent = 'Extract Images';
+                showGoogleMapsAlternatives(url);
             }
         }
 
-        function displayImages(images) {
-            const grid = document.getElementById('imagesGrid');
+        // Display extracted Maps images
+        function displayMapsImages(images, url) {
+            const container = document.getElementById('mapsContainer');
             
-            images.forEach((imgData, index) => {
-                const card = document.createElement('div');
-                card.className = 'image-card';
-                
-                card.innerHTML = `
-                    <img 
-                        class="image-preview" 
-                        data-src="${imgData.src}"
-                        alt="${imgData.alt}"
-                        title="${imgData.title}"
-                        onclick="openModal('${imgData.src}')"
-                        onload="handleImageLoad(this)"
-                        onerror="handleImageError(this)"
-                    >
-                    <div class="image-info">
-                        <div class="image-dimensions" id="dims-${index}">Loading...</div>
-                        <div class="image-url">${imgData.src}</div>
-                        <button class="download-btn" onclick="downloadImage('${imgData.src}', 'image-${index}')">
-                            Download
+            container.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #1a73e8;">🖼️ Extracted ${images.length} Images from Google Maps</h3>
+                    <p style="color: #666;">Click any image to download • Right-click for save options</p>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto;">
+                    ${images.map((img, i) => `
+                        <div style="border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;">
+                            <img src="${img.src}" alt="${img.alt}" 
+                                 style="width: 100%; height: 200px; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                                 onclick="downloadImage('${img.src}', 'maps-image-${i + 1}')"
+                                 onmouseover="this.style.transform='scale(1.05)'"
+                                 onmouseout="this.style.transform='scale(1)'">
+                            <div style="padding: 10px; background: #f8f9fa;">
+                                <button onclick="downloadImage('${img.src}', 'maps-image-${i + 1}')" 
+                                        style="width: 100%; padding: 8px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    💾 Download Image ${i + 1}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="showGoogleMapsAlternatives('${url}')" class="btn" style="margin-right: 10px;">
+                        🔄 Try Other Methods
+                    </button>
+                    <button onclick="openInPopup()" class="btn btn-secondary">
+                        🪟 Open in Popup
+                    </button>
+                </div>
+            `;
+        }
+
+        // Show alternatives for Google Maps
+        function showGoogleMapsAlternatives(url) {
+            const container = document.getElementById('mapsContainer');
+            
+            showStatus('⚠️ Google Maps content protected - showing alternatives', 'error');
+            
+            container.innerHTML = `
+                <div style="text-align: center;">
+                    <h3 style="color: #333; margin-bottom: 20px;">🗺️ Google Maps requires special access</h3>
+                    <p style="color: #666; margin-bottom: 30px;">
+                        Google Maps blocks most embedding methods. Here are the best alternatives:
+                    </p>
+                    
+                    <div style="display: grid; gap: 15px; max-width: 500px; margin: 0 auto;">
+                        <button onclick="openInPopup()" class="btn" style="width: 100%; padding: 15px;">
+                            🪟 <strong>Open in Popup Window</strong><br>
+                            <small>Opens Maps in new window - full functionality</small>
+                        </button>
+                        
+                        <button onclick="showBookmarkletMethod()" class="btn btn-secondary" style="width: 100%; padding: 15px;">
+                            📖 <strong>Use Bookmarklet Method</strong><br>
+                            <small>Universal image extractor - works anywhere</small>
+                        </button>
+                        
+                        <button onclick="tryDirectMapLoad()" class="btn btn-purple" style="width: 100%; padding: 15px;">
+                            🔄 <strong>Try Direct iframe</strong><br>
+                            <small>Sometimes works for public Maps links</small>
                         </button>
                     </div>
-                `;
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #e8f4fd; border-radius: 8px; border: 1px solid #1a73e8;">
+                        <h4 style="color: #1a73e8; margin-bottom: 10px;">💡 Pro Tips for Google Maps:</h4>
+                        <ul style="text-align: left; color: #0d47a1; font-size: 14px;">
+                            <li><strong>Business Photos:</strong> Use the bookmarklet on Maps business pages</li>
+                            <li><strong>Street View:</strong> Popup method works best for Street View images</li>
+                            <li><strong>Satellite Images:</strong> Try zooming and scrolling in popup window</li>
+                            <li><strong>Download Tips:</strong> Right-click images in popup window to save</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Try direct Maps iframe load
+        function tryDirectMapLoad() {
+            showStatus('🔄 Trying direct iframe load for Maps...', 'loading');
+            loadPreview(); // Falls back to regular iframe method
+        }
+
+        // Try iframe load with timeout
+        function tryIframeLoad(url) {
+            return new Promise((resolve, reject) => {
+                const frame = document.getElementById('previewFrame');
+                const fetchedContent = document.getElementById('fetchedContent');
+                const emptyState = document.getElementById('emptyState');
+                const controls = document.getElementById('frameControls');
                 
-                grid.appendChild(card);
+                // Show iframe
+                emptyState.style.display = 'none';
+                fetchedContent.style.display = 'none';
+                frame.style.display = 'block';
+                frame.className = 'preview-frame active';
+                controls.className = 'frame-controls active';
                 
-                // Load image with lazy loading
-                setTimeout(() => {
-                    const img = card.querySelector('img');
-                    img.src = img.dataset.src;
-                }, index * 100); // Stagger loading
+                frame.src = url;
+                currentUrl = url;
+
+                const timeout = setTimeout(() => {
+                    reject(new Error('Iframe load timeout'));
+                }, 5000);
+
+                frame.onload = function() {
+                    clearTimeout(timeout);
+                    try {
+                        // Test if we can access the frame content
+                        const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                        if (frameDoc && frameDoc.body && frameDoc.body.innerHTML.trim()) {
+                            showStatus('✅ Website loaded successfully in iframe!', 'success');
+                            resolve();
+                        } else {
+                            reject(new Error('Iframe content blocked'));
+                        }
+                    } catch (error) {
+                        reject(new Error('Iframe access blocked'));
+                    }
+                };
+
+                frame.onerror = function() {
+                    clearTimeout(timeout);
+                    reject(new Error('Iframe failed to load'));
+                };
             });
         }
 
-        function handleImageLoad(img) {
-            imageStats.loaded++;
-            updateStats();
+        // Advanced fetch with multiple fallbacks and better content processing
+        async function loadWithAdvancedFetch() {
+            const url = document.getElementById('frameUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter a valid URL', 'error');
+                return;
+            }
+
+            const fetchedContent = document.getElementById('fetchedContent');
+            const emptyState = document.getElementById('emptyState');
+            const frame = document.getElementById('previewFrame');
+            const controls = document.getElementById('frameControls');
             
-            // Update dimensions
-            const card = img.closest('.image-card');
-            const dimsElement = card.querySelector('.image-dimensions');
-            dimsElement.textContent = `${img.naturalWidth} × ${img.naturalHeight}px`;
-        }
-
-        function handleImageError(img) {
-            imageStats.failed++;
-            updateStats();
+            showStatus('🔄 Advanced fetch in progress...', 'loading');
             
-            const card = img.closest('.image-card');
-            const dimsElement = card.querySelector('.image-dimensions');
-            dimsElement.textContent = 'Failed to load';
-            dimsElement.style.color = '#e53e3e';
+            // Setup display
+            emptyState.style.display = 'none';
+            frame.style.display = 'none';
+            fetchedContent.style.display = 'block';
+            fetchedContent.className = 'fetched-content active';
+            controls.className = 'frame-controls active';
+            currentUrl = url;
             
-            img.style.opacity = '0.3';
-            img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="12" text-anchor="middle" fill="%23999">Failed to load</text></svg>';
+            fetchedContent.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h3>Fetching website content...</h3>
+                    <p>Trying multiple methods to bypass restrictions</p>
+                    <div style="font-size: 12px; color: #888; margin-top: 10px;">
+                        Testing: Direct → AllOrigins → JSONP → CORS-Anywhere → ThingProxy
+                    </div>
+                </div>
+            `;
+
+            // Try multiple fetch methods in sequence
+            const fetchAttempts = [
+                () => fetchDirect(url),
+                () => fetchWithProxy(url, 'allorigins'),
+                () => fetchWithProxy(url, 'jsonp'),
+                () => fetchWithProxy(url, 'cors-anywhere'),
+                () => fetchWithProxy(url, 'thingproxy')
+            ];
+
+            let lastError = '';
+            for (let i = 0; i < fetchAttempts.length; i++) {
+                try {
+                    const methodNames = ['Direct', 'AllOrigins', 'JSONP', 'CORS-Anywhere', 'ThingProxy'];
+                    showStatus(`🔄 Trying ${methodNames[i]} method...`, 'loading');
+                    
+                    const result = await fetchAttempts[i]();
+                    if (result && result.content && result.content.length > 100) {
+                        await processAndDisplayContent(result.content, url, result.method);
+                        showStatus(`✅ Content loaded using ${result.method}!`, 'success');
+                        return;
+                    }
+                } catch (error) {
+                    lastError = error.message;
+                    console.log(`Fetch attempt ${i + 1} failed:`, error.message);
+                    if (i < fetchAttempts.length - 1) {
+                        showStatus(`⚠️ ${error.message} - trying next method...`, 'loading');
+                    }
+                }
+            }
+
+            // All methods failed - show detailed error
+            showStatus('❌ All fetch methods failed. Try popup or bookmarklet.', 'error');
+            fetchedContent.innerHTML = `
+                <div class="content-header" style="background: linear-gradient(45deg, #ef4444, #dc2626);">
+                    <div>
+                        <div>❌ Unable to Load Content</div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                            All ${fetchAttempts.length} methods failed
+                        </div>
+                    </div>
+                    <div style="font-size: 24px;">🚫</div>
+                </div>
+                <div style="padding: 30px; text-align: center;">
+                    <h3 style="color: #333; margin-bottom: 20px;">This website blocks remote access</h3>
+                    <div class="error-details">
+                        <h4>What you can try:</h4>
+                        <div style="display: grid; gap: 15px; margin: 20px 0;">
+                            <button class="btn" onclick="openInPopup()" style="width: 100%;">
+                                🪟 Open in Popup Window (Always Works)
+                            </button>
+                            <button class="btn btn-secondary" onclick="showBookmarkletMethod()" style="width: 100%;">
+                                📖 Use Bookmarklet (Universal Method)
+                            </button>
+                        </div>
+                        <div style="font-size: 14px; color: #666; margin-top: 20px;">
+                            <strong>Last error:</strong> ${lastError}<br>
+                            <strong>URL:</strong> ${url}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
-        function openModal(src) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.style.display = 'block';
-            modalImg.src = src;
+        // Direct fetch attempt
+        async function fetchDirect(url) {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const content = await response.text();
+            if (content.length < 100) throw new Error('Empty or invalid content');
+            return { content, method: 'Direct Fetch' };
         }
 
-        function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
+        // Fetch with proxy
+        async function fetchWithProxy(url, proxyType) {
+            const proxyUrl = corsProxies[proxyType];
+            if (!proxyUrl) throw new Error('Invalid proxy type');
+
+            let fetchUrl;
+            if (proxyType === 'allorigins') {
+                fetchUrl = `${proxyUrl}${encodeURIComponent(url)}`;
+            } else {
+                fetchUrl = `${proxyUrl}${url}`;
+            }
+
+            const response = await fetch(fetchUrl);
+            if (!response.ok) throw new Error(`Proxy fetch failed: ${response.status}`);
+            
+            let content;
+            if (proxyType === 'allorigins' && fetchUrl.includes('/get?')) {
+                const data = await response.json();
+                content = data.contents;
+            } else {
+                content = await response.text();
+            }
+            
+            if (!content || content.length < 100) throw new Error('Empty proxy response');
+            return { content, method: `${proxyType} proxy` };
         }
 
+        // Process and display fetched content with enhanced functionality
+        async function processAndDisplayContent(html, baseUrl, method) {
+            const fetchedContent = document.getElementById('fetchedContent');
+            
+            // Always start with a header
+            fetchedContent.innerHTML = `
+                <div class="content-header">
+                    <div>
+                        <div>🔄 Loaded via ${method}</div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                            Source: ${baseUrl} • Processing content...
+                        </div>
+                    </div>
+                    <div style="font-size: 24px;">🌐</div>
+                </div>
+                <div id="contentContainer" style="height: calc(100% - 60px); overflow: auto;">
+                    <div style="padding: 20px; text-align: center; color: #666;">
+                        <div class="loading-spinner"></div>
+                        Processing content...
+                    </div>
+                </div>
+            `;
+            
+            try {
+                // Parse HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const base = new URL(baseUrl);
+                
+                // Fix all URLs in the document
+                fixUrls(doc, base);
+                
+                // Inject enhancement scripts
+                injectEnhancements(doc, baseUrl);
+                
+                // Try iframe method first
+                const useIframe = await tryIframeContent(doc, baseUrl, method);
+                
+                if (!useIframe) {
+                    // Fallback to direct HTML display
+                    displayDirectHtml(html, baseUrl, method);
+                }
+                
+            } catch (error) {
+                console.error('Content processing error:', error);
+                displayDirectHtml(html, baseUrl, method);
+            }
+        }
+
+        // Try to display content in iframe
+        async function tryIframeContent(doc, baseUrl, method) {
+            return new Promise((resolve) => {
+                try {
+                    const fetchedContent = document.getElementById('fetchedContent');
+                    const container = document.getElementById('contentContainer');
+                    
+                    // Create iframe
+                    const iframe = document.createElement('iframe');
+                    iframe.style.cssText = `
+                        width: 100%;
+                        height: 100%;
+                        border: none;
+                        background: white;
+                    `;
+                    iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms allow-downloads';
+                    
+                    // Create timeout for iframe loading
+                    const timeout = setTimeout(() => {
+                        console.log('Iframe loading timeout - using fallback');
+                        resolve(false);
+                    }, 3000);
+                    
+                    iframe.onload = function() {
+                        clearTimeout(timeout);
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            const doctype = '<!DOCTYPE html>';
+                            const htmlContent = doctype + doc.documentElement.outerHTML;
+                            
+                            iframeDoc.open();
+                            iframeDoc.write(htmlContent);
+                            iframeDoc.close();
+                            
+                            // Update header
+                            fetchedContent.querySelector('.content-header div div:last-child').textContent = 
+                                `Source: ${baseUrl} • Interactive iframe mode`;
+                            
+                            // Add download features
+                            setTimeout(() => {
+                                addImageDownloadFeatures(iframeDoc);
+                            }, 1000);
+                            
+                            resolve(true);
+                        } catch (error) {
+                            console.log('Iframe content writing failed:', error);
+                            resolve(false);
+                        }
+                    };
+                    
+                    iframe.onerror = function() {
+                        clearTimeout(timeout);
+                        resolve(false);
+                    };
+                    
+                    container.innerHTML = '';
+                    container.appendChild(iframe);
+                    
+                } catch (error) {
+                    console.log('Iframe creation failed:', error);
+                    resolve(false);
+                }
+            });
+        }
+
+        // Display content directly as HTML
+        function displayDirectHtml(html, baseUrl, method) {
+            const fetchedContent = document.getElementById('fetchedContent');
+            const container = document.getElementById('contentContainer');
+            
+            // Update header
+            fetchedContent.querySelector('.content-header div div:last-child').textContent = 
+                `Source: ${baseUrl} • Direct HTML display`;
+            
+            // Process and clean HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const base = new URL(baseUrl);
+            
+            // Fix URLs
+            fixUrls(doc, base);
+            
+            // Remove scripts for security
+            doc.querySelectorAll('script').forEach(script => script.remove());
+            
+            // Add enhanced styles
+            const style = doc.createElement('style');
+            style.textContent = `
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+                    margin: 0 !important;
+                    padding: 20px !important;
+                    background: #fff !important;
+                    color: #333 !important;
+                    line-height: 1.6 !important;
+                }
+                
+                img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    cursor: pointer !important;
+                    border-radius: 4px !important;
+                    margin: 5px !important;
+                    transition: all 0.3s ease !important;
+                }
+                
+                img:hover {
+                    transform: scale(1.05) !important;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+                }
+                
+                a {
+                    color: #1a73e8 !important;
+                    text-decoration: none !important;
+                }
+                
+                a:hover {
+                    text-decoration: underline !important;
+                }
+                
+                .enhanced-notice {
+                    background: linear-gradient(45deg, #e8f4fd, #e1f5fe) !important;
+                    border: 1px solid #81d4fa !important;
+                    border-radius: 8px !important;
+                    padding: 15px !important;
+                    margin: 20px 0 !important;
+                    color: #0277bd !important;
+                    font-weight: bold !important;
+                    text-align: center !important;
+                }
+            `;
+            doc.head.appendChild(style);
+            
+            // Add enhancement notice
+            const notice = doc.createElement('div');
+            notice.className = 'enhanced-notice';
+            notice.innerHTML = `
+                🖼️ Enhanced Preview Mode Active<br>
+                <span style="font-size: 12px; font-weight: normal;">
+                    Right-click images to download • All links open in new tabs • Content loaded via ${method}
+                </span>
+            `;
+            doc.body.insertBefore(notice, doc.body.firstChild);
+            
+            // Display content
+            container.innerHTML = doc.body.innerHTML;
+            
+            // Add click handlers to images
+            container.querySelectorAll('img').forEach((img, index) => {
+                img.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    downloadImage(img.src, `image-${Date.now()}-${index}`);
+                    showNotification('📥 Download started!');
+                });
+                
+                img.addEventListener('contextmenu', function(e) {
+                    // Allow right-click for manual saving
+                });
+            });
+            
+            // Make links open in new tabs
+            container.querySelectorAll('a').forEach(link => {
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+            });
+        }
+
+        // Download image function
         function downloadImage(url, filename) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                // Fallback: open in new tab
+                window.open(url, '_blank');
+            }
         }
 
-        // Allow Enter key to trigger extraction
-        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+        // Fix URLs in parsed document
+        function fixUrls(doc, base) {
+            // Fix images
+            doc.querySelectorAll('img').forEach(img => {
+                if (img.src) img.src = resolveUrl(img.src, base);
+                if (img.getAttribute('data-src')) {
+                    img.setAttribute('data-src', resolveUrl(img.getAttribute('data-src'), base));
+                }
+                if (img.getAttribute('srcset')) {
+                    img.setAttribute('srcset', fixSrcSet(img.getAttribute('srcset'), base));
+                }
+            });
+            
+            // Fix links
+            doc.querySelectorAll('a').forEach(link => {
+                if (link.href) {
+                    link.href = resolveUrl(link.href, base);
+                    link.target = '_blank'; // Open in new tab
+                }
+            });
+            
+            // Fix CSS
+            doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+                if (link.href) link.href = resolveUrl(link.href, base);
+            });
+            
+            // Fix scripts
+            doc.querySelectorAll('script[src]').forEach(script => {
+                if (script.src) script.src = resolveUrl(script.src, base);
+            });
+            
+            // Fix background images in styles
+            doc.querySelectorAll('*').forEach(el => {
+                const style = el.getAttribute('style');
+                if (style && style.includes('url(')) {
+                    el.setAttribute('style', fixCssUrls(style, base));
+                }
+            });
+        }
+
+        // Inject enhancement scripts and styles
+        function injectEnhancements(doc, baseUrl) {
+            const style = doc.createElement('style');
+            style.textContent = `
+                /* Enhanced image hover effects */
+                img:hover {
+                    filter: brightness(1.1) !important;
+                    transform: scale(1.02) !important;
+                    transition: all 0.3s ease !important;
+                    cursor: pointer !important;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+                }
+                
+                /* Download helper overlay */
+                .download-helper {
+                    position: fixed !important;
+                    top: 10px !important;
+                    right: 10px !important;
+                    background: rgba(102, 126, 234, 0.95) !important;
+                    color: white !important;
+                    padding: 10px !important;
+                    border-radius: 6px !important;
+                    font-size: 12px !important;
+                    z-index: 999999 !important;
+                    font-family: Arial, sans-serif !important;
+                    max-width: 200px !important;
+                }
+            `;
+            doc.head.appendChild(style);
+            
+            // Add download helper overlay
+            const helper = doc.createElement('div');
+            helper.className = 'download-helper';
+            helper.innerHTML = `
+                💡 Right-click images to download<br>
+                🖼️ Enhanced preview mode
+            `;
+            doc.body.appendChild(helper);
+        }
+
+        // Add image download features
+        function addImageDownloadFeatures(iframeDoc) {
+            if (!iframeDoc) return;
+            
+            try {
+                iframeDoc.querySelectorAll('img').forEach((img, index) => {
+                    img.addEventListener('contextmenu', function(e) {
+                        // Allow normal right-click behavior for downloading
+                    });
+                    
+                    img.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Create download link
+                        const link = document.createElement('a');
+                        link.href = img.src;
+                        link.download = `image-${Date.now()}-${index}`;
+                        link.target = '_blank';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Show notification
+                        showNotification('📥 Download started!');
+                    });
+                });
+            } catch (error) {
+                console.log('Could not add download features:', error);
+            }
+        }
+
+        // Utility functions
+        function resolveUrl(url, base) {
+            try {
+                if (url.startsWith('data:')) return url;
+                if (url.startsWith('//')) return base.protocol + url;
+                if (url.startsWith('/')) return base.origin + url;
+                if (url.startsWith('http')) return url;
+                return new URL(url, base.href).href;
+            } catch {
+                return url;
+            }
+        }
+
+        function fixSrcSet(srcset, base) {
+            return srcset.split(',').map(src => {
+                const parts = src.trim().split(' ');
+                parts[0] = resolveUrl(parts[0], base);
+                return parts.join(' ');
+            }).join(', ');
+        }
+
+        function fixCssUrls(css, base) {
+            return css.replace(/url\(['"]?([^'")]+)['"]?\)/g, (match, url) => {
+                return `url('${resolveUrl(url, base)}')`;
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: bold;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Load with specific proxy
+        async function loadWithProxy(proxyType) {
+            const url = document.getElementById('frameUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter a URL first', 'error');
+                return;
+            }
+            
+            showStatus(`🌐 Loading with ${proxyType} proxy...`, 'loading');
+            
+            try {
+                const result = await fetchWithProxy(url, proxyType);
+                await processAndDisplayContent(result.content, url, result.method);
+                showStatus(`✅ Loaded successfully with ${proxyType}!`, 'success');
+            } catch (error) {
+                showStatus(`❌ ${proxyType} proxy failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Traditional iframe load
+        function loadPreview() {
+            const url = document.getElementById('frameUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter a valid URL', 'error');
+                return;
+            }
+
+            tryIframeLoad(url).then(() => {
+                // Success handled in tryIframeLoad
+            }).catch(() => {
+                showStatus('❌ Iframe embedding blocked. Try Advanced Fetch method.', 'error');
+            });
+        }
+
+        // Switch between methods
+        function switchMethod(method) {
+            currentMethod = method;
+            
+            // Update tab appearance
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(method + 'Tab').classList.add('active');
+            
+            // Show/hide proxy options
+            const proxyOptions = document.getElementById('proxyOptions');
+            if (method === 'proxy') {
+                proxyOptions.className = 'proxy-options active';
+            } else {
+                proxyOptions.className = 'proxy-options';
+            }
+            
+            // Reset display
+            document.getElementById('previewFrame').style.display = 'none';
+            document.getElementById('fetchedContent').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('frameControls').className = 'frame-controls';
+        }
+
+        // Load quick test URL
+        function loadQuickUrl(url) {
+            document.getElementById('frameUrl').value = url;
+            loadWithSmartMethod();
+        }
+
+        // Show bookmarklet method
+        function showBookmarkletMethod() {
+            const bookmarkletCode = `javascript:(function(){
+                const images = Array.from(document.querySelectorAll('img')).filter(img => img.src && img.src.startsWith('http'));
+                const popup = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
+                popup.document.write(\`
+                <html>
+                <head><title>Image Extractor</title>
+                <style>body{font-family:Arial,sans-serif;padding:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}.card{border:1px solid #ddd;border-radius:8px;overflow:hidden}.card img{width:100%;height:150px;object-fit:cover;cursor:pointer}.card-body{padding:10px}.download{background:#4CAF50;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;width:100%}</style>
+                </head>
+                <body>
+                <h1>🖼️ Found \${images.length} Images</h1>
+                <div class="grid">
+                \${images.map((img, i) => \`
+                    <div class="card">
+                        <img src="\${img.src}" onclick="window.open('\${img.src}', '_blank')">
+                        <div class="card-body">
+                            <button class="download" onclick="const a=document.createElement('a');a.href='\${img.src}';a.download='image-\${i}';a.click();">💾 Download</button>
+                        </div>
+                    </div>
+                \`).join('')}
+                </div>
+                </body>
+                </html>
+                \`);
+            })();`;
+
+            const popup = window.open('', '_blank', 'width=600,height=500');
+            popup.document.write(`
+                <html>
+                <head>
+                    <title>Bookmarklet Setup</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+                        .bookmarklet { background: #f59e0b; color: white; padding: 15px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; margin: 20px 0; }
+                        .steps { background: #e8f5e8; padding: 15px; border-radius: 5px; border-left: 4px solid #22c55e; }
+                    </style>
+                </head>
+                <body>
+                    <h1>📖 Universal Image Extractor</h1>
+                    <p><strong>Works on ANY website!</strong></p>
+                    
+                    <div class="steps">
+                        <h3>Setup Instructions:</h3>
+                        <ol>
+                            <li>Drag this button to your bookmarks: <a href="${bookmarkletCode}" class="bookmarklet">🖼️ Extract Images</a></li>
+                            <li>Go to any website (Google Maps, Instagram, etc.)</li>
+                            <li>Click the bookmark to extract all images</li>
+                            <li>Download images from the popup</li>
+                        </ol>
+                    </div>
+                    
+                    <p><strong>💡 This bypasses ALL restrictions!</strong></p>
+                </body>
+                </html>
+            `);
+        }
+
+        // Open in popup
+        function openInPopup() {
+            const url = document.getElementById('frameUrl').value.trim() || 'https://example.com';
+            window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            showStatus('✅ Opened in popup window!', 'success');
+        }
+
+        // Utility functions
+        function adjustFrameHeight(value) {
+            document.getElementById('previewFrame').style.height = value + 'px';
+            document.getElementById('fetchedContent').style.height = value + 'px';
+            document.getElementById('heightValue').textContent = value + 'px';
+        }
+
+        function refreshContent() {
+            if (currentUrl) {
+                switch(currentMethod) {
+                    case 'smart':
+                        loadWithSmartMethod();
+                        break;
+                    case 'iframe':
+                        loadPreview();
+                        break;
+                    case 'fetch':
+                        loadWithAdvancedFetch();
+                        break;
+                    case 'proxy':
+                        // Will be handled by proxy buttons
+                        break;
+                }
+            }
+        }
+
+        function openInNewTab() {
+            if (currentUrl) {
+                window.open(currentUrl, '_blank');
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.querySelector('.content-area');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('frameStatus');
+            status.innerHTML = type === 'loading' ? 
+                `<div class="loading-spinner"></div>${message}` : 
+                message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        // Event listeners
+        document.getElementById('frameUrl').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                extractImages();
+                loadWithSmartMethod();
             }
         });
 
-        // Close modal when clicking outside the image
-        window.onclick = function(event) {
-            const modal = document.getElementById('imageModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('frameUrl').focus();
+            switchMethod('smart');
+        });
     </script>
 </body>
 </html>
